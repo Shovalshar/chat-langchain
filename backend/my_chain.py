@@ -131,30 +131,30 @@ class ChatRequest(BaseModel):
 
 
 def get_retriever() -> BaseRetriever:
-    weaviate_client = weaviate.connect_to_weaviate_cloud(
-        cluster_url=WEAVIATE_URL,
-        auth_credentials=weaviate.classes.init.Auth.api_key(WEAVIATE_API_KEY),
-        skip_init_checks=True,
-    )
-    weaviate_client = WeaviateVectorStore(
-        client=weaviate_client,
-        index_name=WEAVIATE_DOCS_INDEX_NAME,
-        text_key="text",
-        embedding=get_embeddings_model(),
-        attributes=["source", "title"],
-    )
-    # with weaviate.connect_to_local(
-    #     auth_credentials=Auth.api_key(WEAVIATE_API_KEY),
-    # ) as weaviate_client:
-    #     print(weaviate_client.is_ready())
-    #     vectorstore = WeaviateVectorStore(
-    #         client=weaviate_client,
-    #         index_name=WEAVIATE_DOCS_INDEX_NAME,
-    #         text_key="text",
-    #         embedding=get_embeddings_model(),
-    #         attributes=["source", "title"],
-    #         )
-    #     return vectorstore.as_retriever(search_kwargs=dict(k=6))
+    # weaviate_client = weaviate.connect_to_weaviate_cloud(
+    #     cluster_url=WEAVIATE_URL,
+    #     auth_credentials=weaviate.classes.init.Auth.api_key(WEAVIATE_API_KEY),
+    #     skip_init_checks=True,
+    # )
+    # weaviate_client = WeaviateVectorStore(
+    #     client=weaviate_client,
+    #     index_name=WEAVIATE_DOCS_INDEX_NAME,
+    #     text_key="text",
+    #     embedding=get_embeddings_model(),
+    #     attributes=["source", "title"],
+    # )
+    with weaviate.connect_to_local(
+        auth_credentials=Auth.api_key(WEAVIATE_API_KEY),
+    ) as weaviate_client:
+        print(weaviate_client.is_ready())
+        vectorstore = WeaviateVectorStore(
+            client=weaviate_client,
+            index_name=WEAVIATE_DOCS_INDEX_NAME,
+            text_key="text",
+            embedding=get_embeddings_model(),
+            attributes=["source", "title"],
+            )
+        return vectorstore.as_retriever(search_kwargs=dict(k=6))
 
 
 def create_retriever_chain(
